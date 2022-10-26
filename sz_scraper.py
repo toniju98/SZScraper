@@ -29,22 +29,25 @@ def scrape():
     return time, title, keywords, summary, text
 
 
-def save_articles(link_yo):
-    json_form = {"headline": scrape()[1], "date": scrape()[0],
-                 "text": scrape()[4], "category": scrape()[2], "author": scrape()[0],
-                 "summ": scrape()[3], "url": link_yo}
+def save_articles(weblink):
+    time, title, keywords, summary, text = scrape()
+    json_form = {"headline": title, "date": time,
+                 "text": text, "category": keywords, "author": time,
+                 "summary": summary, "url": weblink}
     return json_form
 
 
 def save_all(all_articles):
     articles = {'articles': all_articles}
-    with open("C:/Users/tonij/Documents/Beispieldaten/test.json", "w", encoding="utf8") as outfile:
+    # TODO: insert location where to store the json
+    with open("YOUR_FILE_NAME", "w", encoding="utf8") as outfile:
         json.dump(articles, outfile, indent=4, ensure_ascii=False)
 
 
 if __name__ == '__main__':
     # State the location of your driver
-    executable_path = {"executable_path": "C:/Users/tonij/Downloads/chromedriver_win32 (3)/chromedriver.exe"}
+    # TODO: download chromedriver.exe and insert path to your .exe
+    executable_path = {"executable_path": "YOUR_PATH_TO_CHROMEDRIVER.EXE"}
     # Instantiate a browser object as follows...
     # Pass 'headless=False' to make Chrome launch a visible window
     browser = Browser("chrome", **executable_path, headless=False)
@@ -61,10 +64,10 @@ if __name__ == '__main__':
         if a.find_all("a", href=True):
             b = a.find("a", href=True)
             links.append(b['href'])
-    articles_yo = []
+    all_articles_list = []
     for link in links:
         browser.visit(link)
         soup = BeautifulSoup(browser.html, 'html.parser')
         scrape()
-        articles_yo.append(save_articles(link))
-    save_all(articles_yo)
+        all_articles_list.append(save_articles(link))
+    save_all(all_articles_list)
